@@ -35,22 +35,21 @@
 
 ![Cena 3](nome_da_imagem_aqui.png)
 
-> Caso o grupo tenha implementado iluminação personalizada, como luzes difusas (DiffuseLight), esta cena pode demonstrar o efeito de iluminação sobre materiais diferentes.
+> [Descrição cena 3].
 
-### 💡 Cena 4
+### Cena 4
 
 ![Cena 4](nome_da_imagem_aqui.png)
 
-> Caso o grupo tenha implementado iluminação personalizada, como luzes difusas (DiffuseLight), esta cena pode demonstrar o efeito de iluminação sobre materiais diferentes.
+> [Descrição cena 4]
 
 ---
 
-## 🚀 Como Rodar o Projeto
+## Como Rodar o Projeto
 
-### ✅ Pré-requisitos
+### Pré-requisitos
 
 - Compilador C++ com suporte a C++11 ou superior
-- `make` instalado (ou compilação manual via `g++`)
 - Biblioteca padrão C++ (nenhuma dependência externa é usada)
 
 ### 📦 Compilando e Executando
