@@ -59,6 +59,9 @@
 git clone https://github.com/seu-usuario/nome-do-repositorio.git
 cd nome-do-repositorio
 
+# Vá para a branch da cena que deseja executar 
+git checkout (cena_1, cena_2, cena_3 ou cena_4)
+
 # Vá para o diretório do código
 cd .\src\InOneWeekend\
 
