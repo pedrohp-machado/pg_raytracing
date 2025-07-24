@@ -21,7 +21,7 @@ int main() {
     for (int i = 0; i < 100; ++i) {
         auto center = point3(
             0 + 1.5 * random_double(-1, 1),
-            5 + 1.5 * random_double(0, 1),
+            7 + 1.5 * random_double(0, 1),
             0 + 1.5 * random_double(-1, 1)
         );
 
@@ -57,14 +57,27 @@ int main() {
         }
     }
 
-    // Telhado: duas diagonais de esferas
-    for (int i = 0; i < largura; ++i) {
-        world.add(make_shared<sphere>(
-            point3(-1.2 + i*r*2, altura*r*2 + r, -1.5 - i*r*0.6),
-            r, roof_color));
-        world.add(make_shared<sphere>(
-            point3(-1.2 + i*r*2, altura*r*2 + r, 1.5 + i*r*0.6),
-            r, roof_color));
+    // Telhado
+    int base_size = 5;              
+    int num_camadas = 5;            
+    double camada_altura = r * 2;  
+
+    point3 centro_base(0, altura * r * 2, 0);
+
+    for (int k = 0; k < num_camadas; ++k) {
+        int camada_lado = base_size - k;
+        double offset = camada_lado * r;
+        double y = centro_base.y() + k * camada_altura;
+
+        for (int i = 0; i < camada_lado; ++i) {
+            for (int j = 0; j < camada_lado; ++j) {
+                double x = centro_base.x() - offset + r + i * 2*r;
+                double z = centro_base.z() - offset + r + j * 2*r;
+
+                world.add(make_shared<sphere>(
+                    point3(x, y, z), r, roof_color));
+            }
+        }
     }
 
     // ------------------------
@@ -78,8 +91,8 @@ int main() {
     cam.max_depth         = 20;
 
     cam.vfov     = 40;
-    cam.lookfrom = point3(13, 4, 6);
-    cam.lookat   = point3(0, 1, 0);
+    cam.lookfrom = point3(20, 6, 6);
+    cam.lookat   = point3(0, 3, 0);
     cam.vup      = vec3(0, 1, 0);
 
     cam.defocus_angle = 0.05;
