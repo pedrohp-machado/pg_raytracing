@@ -1,14 +1,3 @@
-//==============================================================================================
-// Originally written in 2016 by Peter Shirley <ptrshrl@gmail.com>
-//
-// To the extent possible under law, the author(s) have dedicated all copyright and related and
-// neighboring rights to this software to the public domain worldwide. This software is
-// distributed without any warranty.
-//
-// You should have received a copy (see file COPYING.txt) of the CC0 Public Domain Dedication
-// along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
-//==============================================================================================
-
 #include "rtweekend.h"
 
 #include "camera.h"
@@ -17,63 +6,83 @@
 #include "material.h"
 #include "sphere.h"
 
-
 int main() {
     hittable_list world;
 
+    // ------------------------
+    // Chão
+    // ------------------------
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
     world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
 
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
-            auto choose_mat = random_double();
-            point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+    // ------------------------
+    // Balões no ar
+    // ------------------------
+    for (int i = 0; i < 100; ++i) {
+        auto center = point3(
+            0 + 1.5 * random_double(-1, 1),
+            5 + 1.5 * random_double(0, 1),
+            0 + 1.5 * random_double(-1, 1)
+        );
 
-            if ((center - point3(4, 0.2, 0)).length() > 0.9) {
-                shared_ptr<material> sphere_material;
+        auto color_balloon = color::random();
+        auto balloon_material = make_shared<lambertian>(color_balloon);
+        world.add(make_shared<sphere>(center, 0.3, balloon_material));
+    }
 
-                if (choose_mat < 0.8) {
-                    // diffuse
-                    auto albedo = color::random() * color::random();
-                    sphere_material = make_shared<lambertian>(albedo);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else if (choose_mat < 0.95) {
-                    // metal
-                    auto albedo = color::random(0.5, 1);
-                    auto fuzz = random_double(0, 0.5);
-                    sphere_material = make_shared<metal>(albedo, fuzz);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else {
-                    // glass
-                    sphere_material = make_shared<dielectric>(1.5);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                }
-            }
+    // ------------------------
+    // Casa de bolinhas
+    // ------------------------
+
+    auto wall_color = make_shared<lambertian>(color(0.72, 0.45, 0.2)); // cor da parede
+    auto roof_color = make_shared<lambertian>(color(0.5, 0.1, 0.1));   // cor do telhado
+
+    const double r = 0.3; // raio das bolinhas
+    const int largura = 5;
+    const int altura = 6;
+
+    // Paredes da frente e fundo
+    for (int y = 0; y < altura; ++y) {
+        for (int x = 0; x < largura; ++x) {
+            world.add(make_shared<sphere>(point3(-1.2 + x*r*2, y*r*2 + r, -1.5), r, wall_color)); // frente
+            world.add(make_shared<sphere>(point3(-1.2 + x*r*2, y*r*2 + r,  1.5), r, wall_color)); // fundo
         }
     }
 
-    auto material1 = make_shared<dielectric>(1.5);
-    world.add(make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
+    // Paredes laterais
+    for (int y = 0; y < altura; ++y) {
+        for (int z = 1; z < largura-1; ++z) {
+            world.add(make_shared<sphere>(point3(-1.5, y*r*2 + r, -1.2 + z*r*2), r, wall_color)); // esquerda
+            world.add(make_shared<sphere>(point3( 1.5, y*r*2 + r, -1.2 + z*r*2), r, wall_color)); // direita
+        }
+    }
 
-    auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
-    world.add(make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
+    // Telhado: duas diagonais de esferas
+    for (int i = 0; i < largura; ++i) {
+        world.add(make_shared<sphere>(
+            point3(-1.2 + i*r*2, altura*r*2 + r, -1.5 - i*r*0.6),
+            r, roof_color));
+        world.add(make_shared<sphere>(
+            point3(-1.2 + i*r*2, altura*r*2 + r, 1.5 + i*r*0.6),
+            r, roof_color));
+    }
 
-    auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
-    world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
-
+    // ------------------------
+    // Câmera
+    // ------------------------
     camera cam;
 
     cam.aspect_ratio      = 16.0 / 9.0;
-    cam.image_width       = 1200;
-    cam.samples_per_pixel = 10;
+    cam.image_width       = 800;
+    cam.samples_per_pixel = 50;
     cam.max_depth         = 20;
 
-    cam.vfov     = 20;
-    cam.lookfrom = point3(13,2,3);
-    cam.lookat   = point3(0,0,0);
-    cam.vup      = vec3(0,1,0);
+    cam.vfov     = 40;
+    cam.lookfrom = point3(13, 4, 6);
+    cam.lookat   = point3(0, 1, 0);
+    cam.vup      = vec3(0, 1, 0);
 
-    cam.defocus_angle = 0.6;
+    cam.defocus_angle = 0.05;
     cam.focus_dist    = 10.0;
 
     cam.render(world);
