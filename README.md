@@ -33,9 +33,9 @@
 
 ### Cena 3
 
-![Cena 3](nome_da_imagem_aqui.png)
+![Cena 3](images/cena_3.jpg)
 
-> [Descrição cena 3].
+> Cena com uma casa feita de bolinhas, rodeada de "balões" em cima dela 🏠🎈🎈🎈.
 
 ### Cena 4
 
