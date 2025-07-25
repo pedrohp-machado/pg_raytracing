@@ -39,9 +39,9 @@
 
 ### Cena 4
 
-![Cena 4](nome_da_imagem_aqui.png)
+![Cena 4](images/cena_4.jpg)
 
-> [Descrição cena 4]
+> Um simples árvore de natal enfeitada com decorações reluzentes.
 
 ---
 
