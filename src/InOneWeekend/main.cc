@@ -21,59 +21,67 @@
 int main() {
     hittable_list world;
 
+    // Chão
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
 
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
-            auto choose_mat = random_double();
-            point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+    // Materiais
+    auto green_leaf = make_shared<lambertian>(color(0.1, 0.5, 0.1));
+    auto shiny_red = make_shared<metal>(color(0.8, 0.1, 0.1), 0.0);
+    auto shiny_silver = make_shared<metal>(color(0.8, 0.8, 0.8), 0.0);
+    auto trunk = make_shared<lambertian>(color(0.4, 0.2, 0.1));
+    auto gold = make_shared<metal>(color(1.0, 0.85, 0.3), 0.0);
 
-            if ((center - point3(4, 0.2, 0)).length() > 0.9) {
-                shared_ptr<material> sphere_material;
+    // Tronco
+    world.add(make_shared<sphere>(point3(0, 0.5, 0), 0.5, trunk));
+    world.add(make_shared<sphere>(point3(0, 1.2, 0), 0.4, trunk));
 
-                if (choose_mat < 0.8) {
-                    // diffuse
-                    auto albedo = color::random() * color::random();
-                    sphere_material = make_shared<lambertian>(albedo);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else if (choose_mat < 0.95) {
-                    // metal
-                    auto albedo = color::random(0.5, 1);
-                    auto fuzz = random_double(0, 0.5);
-                    sphere_material = make_shared<metal>(albedo, fuzz);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+    double base_y = 1.7;
+
+    // Parâmetros da árvore
+    int layers = 6;                   // número de camadas
+    double r = 0.3;                   // raio da esfera
+    double spacing = 2.0 * r * 0.90;  // espaçamento entre esferas (ligeiramente maior que o diâmetro)
+
+    for (int y = 0; y < layers; y++) {
+        int tipo = 0;
+        int spheres_per_row = layers - y;
+        double y_pos = base_y + r + y * spacing;
+
+        for (int i = 0; i < spheres_per_row; i++) {
+            for (int j = 0; j < spheres_per_row; j++) {
+                double x = (i - (spheres_per_row - 1) / 2.0) * spacing;
+                double z = (j - (spheres_per_row - 1) / 2.0) * spacing;
+                point3 center(x, y_pos, z);
+                if (tipo % 3 == 0){
+                    world.add(make_shared<sphere>(center, r, shiny_red));
+                } else if (tipo % 5 == 0){
+                    world.add(make_shared<sphere>(center, r, shiny_silver));
                 } else {
-                    // glass
-                    sphere_material = make_shared<dielectric>(1.5);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                    world.add(make_shared<sphere>(center, r, green_leaf));
                 }
+                tipo++;
             }
         }
     }
 
-    auto material1 = make_shared<dielectric>(1.5);
-    world.add(make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
+    // Estrela no topo
+    double top_y = base_y + layers * 2 * r;
+    world.add(make_shared<sphere>(point3(0, top_y, 0), 0.3, gold));
 
-    auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
-    world.add(make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
-
-    auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
-    world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
-
+    // Câmera
     camera cam;
-
     cam.aspect_ratio      = 16.0 / 9.0;
     cam.image_width       = 1200;
-    cam.samples_per_pixel = 10;
-    cam.max_depth         = 20;
+    cam.samples_per_pixel = 150;
+    cam.max_depth         = 50;
 
-    cam.vfov     = 20;
-    cam.lookfrom = point3(13,2,3);
-    cam.lookat   = point3(0,0,0);
+    cam.vfov     = 30;
+    cam.lookfrom = point3(0, 4, 12);
+    cam.lookat   = point3(0, 3, 0);
     cam.vup      = vec3(0,1,0);
 
-    cam.defocus_angle = 0.6;
+    cam.defocus_angle = 0.0;
     cam.focus_dist    = 10.0;
 
     cam.render(world);
