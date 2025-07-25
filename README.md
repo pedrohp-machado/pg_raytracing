@@ -39,7 +39,7 @@
 
 ### Cena 4
 
-![Cena 4](images/cena_4.jpg)
+![Cena 4](images/cena_4.JPG)
 
 > Um simples árvore de natal enfeitada com decorações reluzentes.
 
