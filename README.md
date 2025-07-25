@@ -56,13 +56,10 @@
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/nome-do-repositorio.git
-cd nome-do-repositorio
+git clone https://github.com/pedrohp-machado/pg_raytracing.git
 
-# Vá para a branch da cena que deseja executar 
+# Vá para a branch da cena que deseja executar e em seguida para o diretório do código 
 git checkout (cena_1, cena_2, cena_3 ou cena_4)
-
-# Vá para o diretório do código
 cd .\src\InOneWeekend\
 
 # Compile
